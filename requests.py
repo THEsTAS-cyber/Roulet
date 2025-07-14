@@ -37,3 +37,13 @@ async def get_completed_tasks_count(user_id):
     async with async_session() as session:
         return await session.scalar(select(func.count(Task.id)).where(Task.completed == True))
     
+async def add_task(user_id: int, title: str):
+    async with async_session() as session:
+        new_task = Task(title=title, user_id=user_id)
+        session.add(new_task)
+        await session.commit()
+
+async def complete_task(task_id: int):
+    async with async_session() as session:
+        await session.execute(update(Task).where(Task.id == task_id).values(completed=True))
+        await session.commit()

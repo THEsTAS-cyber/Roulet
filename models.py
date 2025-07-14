@@ -12,17 +12,17 @@ class Base(AsyncAttrs, DeclarativeBase):
 class User(Base):
     __tablename__ = 'users'
     
-    id: Mapped[int] = mapped_colomn(primary_key=True)
-    tg_id = mapped_colomn(BigInteger)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tg_id = mapped_column(BigInteger)
     
 class Task(Base):
     __tablename__ = 'tasks'
     
-    id: Mapped[int] = mapped_coloumn(primary_key=True)
-    title: Mapped[str] = mapped_coloumn(String(128))
-    completed: Mapped[bool] = mapped_coloumn(default=False)
-    user: Mapped[int] = mapped_coloumn(ForeignKey('users.id', ondelete='CASCADE'))
+    id: Mapped[int] = mapped_column(primary_key=True)
+    title: Mapped[str] = mapped_column(String(128))
+    completed: Mapped[bool] = mapped_column(default=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
     
 async def init_db():
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadate.create_all)
+        await conn.run_sync(Base.metadata.create_all)

@@ -18,6 +18,10 @@ class ChangeAge(BaseModel):
     tg_id: int
     age: int
 
+class AddWallet(BaseModel):
+    tg_id: int
+    title: str
+
 @asynccontextmanager
 async def lifespan(app_: FastAPI):
     await init_db()
@@ -45,7 +49,7 @@ async def profile(tg_id: int):
     completed_tasks_count = await rq.get_completed_tasks_count(user.id)
     return {'completedTasks': completed_tasks_count}
 
-@app.post("/api/add")
+@app.post("/api/addTask")
 async def add_task(data: AddTask):
     user = await rq.add_user(data.tg_id)
     await rq.add_task(user.id, data.title)
@@ -58,5 +62,16 @@ async def complete_task(data: CompleteTask):
 
 @app.patch("/api/changeAge/{tg_id}")
 async def change_age(data: ChangeAge):
-    await rq.change_age(data.tg_id, data.age)
+    user = await rq.add_user(data.tg_id)
+    await rq.change_age(user.id, data.age)
     return {"status": 200}
+
+@app.post("/api/addWallet")
+async def add_wallet(data: AddWallet):
+    user = await rq.add_user(tg_id=data.tg_id)
+    new_wallet = await rq.add_wallet(user_id=user.id, title=data.title)
+    return {"status": 200}
+
+@app.get("/api/getUser/{tg_id}")
+async def get_user(tg_id: int):
+    return await rq.add_user(tg_id=tg_id, serialized=True)

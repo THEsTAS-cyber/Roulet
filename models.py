@@ -14,6 +14,14 @@ class User(Base):
     
     id: Mapped[int] = mapped_column(primary_key=True)
     tg_id = mapped_column(BigInteger)
+    age: Mapped[int] = mapped_column(default=0)
+
+class Wallet(Base):
+    __tablename__ = 'wallets'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    money: Mapped[int] = mapped_column(default=0)
+    user: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
     
 class Task(Base):
     __tablename__ = 'tasks'
@@ -21,7 +29,7 @@ class Task(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(128))
     completed: Mapped[bool] = mapped_column(default=False)
-    user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
+    user: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
     
 async def init_db():
     async with engine.begin() as conn:

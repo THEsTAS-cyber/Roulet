@@ -14,6 +14,10 @@ class AddTask(BaseModel):
 class CompleteTask(BaseModel):
     task_id: int
 
+class ChangeAge(BaseModel):
+    tg_id: int
+    age: int
+
 @asynccontextmanager
 async def lifespan(app_: FastAPI):
     await init_db()
@@ -44,10 +48,15 @@ async def profile(tg_id: int):
 @app.post("/api/add")
 async def add_task(data: AddTask):
     user = await rq.add_user(data.tg_id)
-    await rq.add_task(user_id=user.id, title=data.title)
+    await rq.add_task(user.id, data.title)
     return {"status": 200}
 
 @app.patch("/api/completed")
 async def complete_task(data: CompleteTask):
-    await rq.complete_task(data.task_id)
+    await rq.update_task(data.task_id)
+    return {"status": 200}
+
+@app.patch("/api/changeAge/{tg_id}")
+async def change_age(data: ChangeAge):
+    await rq.change_age(data.tg_id, data.age)
     return {"status": 200}
